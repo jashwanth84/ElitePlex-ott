@@ -6,11 +6,26 @@
         <item name="android:navigationBarColor">@color/bg_dark</item>
         <item name="colorPrimary">@color/accent_gold</item>
         <item name="colorOnPrimary">@color/accent_gold_dark</item>
-        <item name="colorSecondary">@color/accent_hot</item>
+        <item name="colorSecondary">@color/floating_green</item>
         <item name="colorSurface">@color/bg_surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+    </style>
+
+    <style name="Widget.ElitePlex.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemActiveIndicatorStyle">@style/Widget.ElitePlex.BottomNav.ActiveIndicator</item>
+    </style>
+
+    <style name="Widget.ElitePlex.BottomNav.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/white</item>
+        <item name="android:width">56dp</item>
+        <item name="android:height">32dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.ElitePlex.Pill</item>
+    </style>
+
+    <style name="ShapeAppearance.ElitePlex.Pill" parent="ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerSize">16dp</item>
     </style>
 
     <style name="Theme.ElitePlex.Fullscreen" parent="Theme.ElitePlex">

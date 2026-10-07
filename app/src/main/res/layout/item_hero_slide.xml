@@ -131,7 +131,7 @@
                 android:layout_height="44dp"
                 android:background="@drawable/bg_button_gold"
                 app:backgroundTint="@null"
-                android:text="Watch Now"
+                android:text="Play"
                 android:textAllCaps="false"
                 android:textColor="@color/accent_gold_dark"
                 android:textStyle="bold"
@@ -141,19 +141,27 @@
                 app:iconSize="18dp"
                 android:paddingHorizontal="18dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_hero_details"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/btn_hero_bookmark"
+                android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="8dp"
                 android:background="@drawable/bg_button_glass"
-                app:backgroundTint="@null"
-                android:text="Details"
-                android:textAllCaps="false"
-                android:textColor="@color/text_primary"
-                android:textStyle="bold"
-                android:textSize="13sp"
-                android:paddingHorizontal="16dp" />
+                android:padding="11dp"
+                android:src="@drawable/ic_bookmark"
+                app:tint="@color/text_primary"
+                android:contentDescription="Bookmark" />
+
+            <ImageView
+                android:id="@+id/btn_hero_details"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_button_glass"
+                android:padding="11dp"
+                android:src="@drawable/ic_info"
+                app:tint="@color/text_primary"
+                android:contentDescription="Details" />
         </LinearLayout>
 
     </LinearLayout>

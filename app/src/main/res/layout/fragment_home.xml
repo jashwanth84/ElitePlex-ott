@@ -82,6 +82,45 @@
                     android:layout_width="match_parent"
                     android:layout_height="380dp" />
 
+                <!-- Streaming Platforms Section -->
+                <LinearLayout
+                    android:id="@+id/layout_streaming_platforms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <View
+                            android:layout_width="4dp"
+                            android:layout_height="18dp"
+                            android:background="@color/accent_gold"
+                            android:layout_marginEnd="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="Streaming Platforms"
+                            android:textColor="@color/text_primary"
+                            android:textSize="17sp" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_streaming_platforms"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="4dp" />
+                </LinearLayout>
+
                 <!-- Continue Watching Section -->
                 <LinearLayout
                     android:id="@+id/layout_continue_watching"

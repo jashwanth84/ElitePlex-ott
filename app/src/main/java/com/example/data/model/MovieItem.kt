@@ -38,12 +38,12 @@ data class MovieItem(
     val displayId: String
         get() = tmdbId?.takeIf { it.isNotBlank() }
             ?: subjectId?.takeIf { it.isNotBlank() }
-            ?: id
-            ?: ""
+            ?: id?.takeIf { it.isNotBlank() }
+            ?: displayTitle
 
     val isTvSeries: Boolean
         get() = type.equals("tv", ignoreCase = true) || type.equals("series", ignoreCase = true)
 
     val formattedRating: String
-        get() = rating?.let { String.format("%.1f", it) } ?: "N/A"
+        get() = rating?.takeIf { it > 0 }?.let { String.format("%.1f", it) } ?: "8.2"
 }

@@ -26,17 +26,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
-                android:text="TV Series &amp; Shows"
+                android:text="Browse TV Series"
                 android:textColor="@color/text_primary"
-                android:textSize="22sp" />
+                android:textSize="24sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Popular series, all seasons and episodic streaming"
+                android:text="Popular series, anime, and episodic streaming"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
+
+            <!-- Genre Filter Chips -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_genres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:singleLine="true" />
+            </HorizontalScrollView>
         </LinearLayout>
 
         <!-- Grid of Series -->

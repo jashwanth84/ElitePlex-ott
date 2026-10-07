@@ -48,12 +48,12 @@ class DetailsViewModel(
             var detailResult = if (isTvSeries) {
                 seriesRepository.getTvDetail(id)
             } else {
-                movieRepository.getMovieDetail(id)
+                movieRepository.getMovieDetail(id, isTv = false)
             }
 
             if (detailResult.isFailure) {
                 val altResult = if (isTvSeries) {
-                    movieRepository.getMovieDetail(id)
+                    movieRepository.getMovieDetail(id, isTv = false)
                 } else {
                     seriesRepository.getTvDetail(id)
                 }

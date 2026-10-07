@@ -23,7 +23,7 @@ class SeriesRepository(
                 try {
                     apiService.getTvDetail(id)
                 } catch (e: Exception) {
-                    apiService.getMbDetail(id).toMovieDetailResponse()
+                    apiService.getMovieDetail(id)
                 }
             }
         }

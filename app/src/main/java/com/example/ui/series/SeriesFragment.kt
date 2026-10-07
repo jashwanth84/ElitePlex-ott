@@ -53,9 +53,30 @@ class SeriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupGenreChips()
         setupRecyclerView()
         setupListeners()
         observeData()
+    }
+
+    private fun setupGenreChips() {
+        val genres = listOf("All", "Drama", "Action", "Anime", "Sci-Fi", "Comedy", "Crime", "Animation")
+        binding.chipGroupGenres.removeAllViews()
+        for ((index, g) in genres.withIndex()) {
+            val chip = com.google.android.material.chip.Chip(requireContext()).apply {
+                text = g
+                isCheckable = true
+                isChecked = index == 0
+                setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.text_primary))
+                setChipBackgroundColorResource(R.color.bg_card)
+                setChipStrokeColorResource(R.color.border)
+                chipStrokeWidth = 1f
+                setOnClickListener {
+                    viewModel.refresh()
+                }
+            }
+            binding.chipGroupGenres.addView(chip)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -63,7 +84,7 @@ class SeriesFragment : Fragment() {
             openDetails(show)
         }
 
-        val gridLayoutManager = GridLayoutManager(requireContext(), 3)
+        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvSeries.apply {
             layoutManager = gridLayoutManager
             adapter = seriesAdapter

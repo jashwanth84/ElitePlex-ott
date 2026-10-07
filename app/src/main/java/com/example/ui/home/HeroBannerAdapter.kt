@@ -11,7 +11,8 @@ import com.example.databinding.ItemHeroSlideBinding
 class HeroBannerAdapter(
     private val items: List<MovieItem>,
     private val onWatchClick: (MovieItem) -> Unit,
-    private val onDetailsClick: (MovieItem) -> Unit
+    private val onDetailsClick: (MovieItem) -> Unit,
+    private val onBookmarkClick: (MovieItem) -> Unit = {}
 ) : RecyclerView.Adapter<HeroBannerAdapter.HeroViewHolder>() {
 
     inner class HeroViewHolder(private val binding: ItemHeroSlideBinding) :
@@ -32,6 +33,7 @@ class HeroBannerAdapter(
 
             binding.btnHeroWatch.setOnClickListener { onWatchClick(item) }
             binding.btnHeroDetails.setOnClickListener { onDetailsClick(item) }
+            binding.btnHeroBookmark.setOnClickListener { onBookmarkClick(item) }
             binding.root.setOnClickListener { onDetailsClick(item) }
         }
     }
@@ -39,6 +41,10 @@ class HeroBannerAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeroViewHolder {
         val binding = ItemHeroSlideBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
+        )
+        binding.root.layoutParams = RecyclerView.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
         )
         return HeroViewHolder(binding)
     }

@@ -15,6 +15,9 @@ interface SavedItemDao {
     @Query("SELECT EXISTS(SELECT 1 FROM saved_items WHERE id = :id)")
     fun isItemSaved(id: String): Flow<Boolean>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM saved_items WHERE id = :id)")
+    suspend fun isItemSavedSync(id: String): Boolean
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSavedItem(item: SavedItemEntity)
 

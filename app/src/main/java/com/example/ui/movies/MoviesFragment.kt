@@ -52,9 +52,31 @@ class MoviesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupGenreChips()
         setupRecyclerView()
         setupListeners()
         observeData()
+    }
+
+    private fun setupGenreChips() {
+        val genres = listOf("All", "Anime", "Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Animation")
+        binding.chipGroupGenres.removeAllViews()
+        for ((index, g) in genres.withIndex()) {
+            val chip = com.google.android.material.chip.Chip(requireContext()).apply {
+                text = g
+                isCheckable = true
+                isChecked = index == 0
+                setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.text_primary))
+                setChipBackgroundColorResource(R.color.bg_card)
+                setChipStrokeColorResource(R.color.border)
+                chipStrokeWidth = 1f
+                setOnClickListener {
+                    // Filter or refresh
+                    viewModel.refresh()
+                }
+            }
+            binding.chipGroupGenres.addView(chip)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -62,7 +84,7 @@ class MoviesFragment : Fragment() {
             openDetails(movie)
         }
 
-        val gridLayoutManager = GridLayoutManager(requireContext(), 3)
+        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvMovies.apply {
             layoutManager = gridLayoutManager
             adapter = movieAdapter

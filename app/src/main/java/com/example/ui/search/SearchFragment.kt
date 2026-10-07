@@ -59,6 +59,7 @@ class SearchFragment : Fragment() {
 
         setupRecyclerView()
         setupSearchInput()
+        setupGenreFilterChips()
         observeData()
     }
 
@@ -67,8 +68,31 @@ class SearchFragment : Fragment() {
             openDetails(item)
         }
         binding.rvSearchResults.apply {
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = searchAdapter
+        }
+    }
+
+    private fun setupGenreFilterChips() {
+        val genres = listOf("All", "Anime", "Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Animation")
+        binding.chipGroupSearchGenres.removeAllViews()
+        for ((index, g) in genres.withIndex()) {
+            val chip = Chip(requireContext()).apply {
+                text = g
+                isCheckable = true
+                isChecked = index == 0
+                setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+                setChipBackgroundColorResource(R.color.bg_card)
+                setChipStrokeColorResource(R.color.border)
+                chipStrokeWidth = 1f
+                setOnClickListener {
+                    if (g != "All") {
+                        binding.etSearch.setText(g)
+                        viewModel.submitSearch(g)
+                    }
+                }
+            }
+            binding.chipGroupSearchGenres.addView(chip)
         }
     }
 
@@ -117,15 +141,29 @@ class SearchFragment : Fragment() {
     }
 
     private fun renderRecentSearches(searches: List<String>) {
+        val trendingList = listOf(
+            "Spider-Man: Brand New Day",
+            "Insidious: Out of the Further",
+            "Fall 2: Deadpoint",
+            "Onslaught",
+            "Lanterns",
+            "Digger",
+            "Resident Evil",
+            "Other Mommy",
+            "Marshals",
+            "Between Steps"
+        )
+        val combined = (searches + trendingList).distinct()
+
         binding.chipGroupRecent.removeAllViews()
-        for (query in searches) {
+        for (query in combined) {
             val chip = Chip(requireContext()).apply {
                 text = query
                 isClickable = true
                 isCheckable = false
                 setTextColor(ContextCompat.getColor(context, R.color.text_primary))
-                setChipBackgroundColorResource(R.color.bg_surface)
-                setChipStrokeColorResource(R.color.card_stroke)
+                setChipBackgroundColorResource(R.color.bg_card)
+                setChipStrokeColorResource(R.color.border)
                 chipStrokeWidth = 1f
                 setOnClickListener {
                     binding.etSearch.setText(query)
@@ -135,7 +173,7 @@ class SearchFragment : Fragment() {
             }
             binding.chipGroupRecent.addView(chip)
         }
-        binding.layoutRecentSearches.visibility = if (searches.isEmpty()) View.GONE else View.VISIBLE
+        binding.layoutRecentSearches.visibility = View.VISIBLE
     }
 
     private fun renderState(state: SearchUiState) {
@@ -179,6 +217,12 @@ class SearchFragment : Fragment() {
                 binding.tvErrorMessage.text = state.message
             }
         }
+    }
+
+    fun searchForQuery(query: String) {
+        binding.etSearch.setText(query)
+        binding.etSearch.setSelection(query.length)
+        viewModel.submitSearch(query)
     }
 
     private fun openDetails(item: MovieItem) {

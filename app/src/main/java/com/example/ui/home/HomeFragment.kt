@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -13,18 +13,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.ElitePlexApplication
+import com.example.MainActivity
 import com.example.R
-import com.example.data.local.WatchHistoryEntity
+import com.example.data.local.SavedItemEntity
 import com.example.data.model.MovieItem
+import com.example.data.model.StreamingPlatform
 import com.example.databinding.FragmentHomeBinding
 import com.example.databinding.ItemContentSectionBinding
 import com.example.ui.details.MovieDetailsActivity
 import com.example.ui.player.PlayerActivity
 import com.example.ui.viewmodel.HomeUiState
 import com.example.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -43,6 +47,7 @@ class HomeFragment : Fragment() {
     }
 
     private lateinit var continueWatchingAdapter: ContinueWatchingAdapter
+    private var autoSlideJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,9 +61,26 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupStreamingPlatforms()
         setupContinueWatching()
         setupListeners()
         observeData()
+    }
+
+    private fun setupStreamingPlatforms() {
+        val platforms = listOf(
+            StreamingPlatform("netflix", "Netflix", R.drawable.ic_platform_netflix, "netflix"),
+            StreamingPlatform("prime", "Prime Video", R.drawable.ic_platform_prime, "prime"),
+            StreamingPlatform("hotstar", "JioHotstar", R.drawable.ic_platform_hotstar, "hotstar"),
+            StreamingPlatform("lionsgate", "Lionsgate Play", R.drawable.ic_platform_lionsgate, "lionsgate")
+        )
+        val adapter = StreamingPlatformAdapter(platforms) { platform ->
+            (activity as? MainActivity)?.openSearchWithQuery(platform.name)
+        }
+        binding.rvStreamingPlatforms.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            this.adapter = adapter
+        }
     }
 
     private fun setupContinueWatching() {
@@ -143,9 +165,11 @@ class HomeFragment : Fragment() {
     private fun setupHeroSection(heroItems: List<MovieItem>) {
         if (heroItems.isEmpty()) {
             binding.heroViewPager.visibility = View.GONE
+            autoSlideJob?.cancel()
             return
         }
         binding.heroViewPager.visibility = View.VISIBLE
+        val app = requireActivity().application as ElitePlexApplication
         val adapter = HeroBannerAdapter(
             items = heroItems,
             onWatchClick = { item ->
@@ -158,21 +182,60 @@ class HomeFragment : Fragment() {
             },
             onDetailsClick = { item ->
                 openDetails(item)
+            },
+            onBookmarkClick = { item ->
+                lifecycleScope.launch {
+                    val entity = SavedItemEntity(
+                        id = item.displayId,
+                        tmdbId = item.displayId,
+                        title = item.displayTitle,
+                        poster = item.poster,
+                        backdrop = item.backdrop,
+                        type = if (item.isTvSeries) "tv" else "movie",
+                        rating = item.rating,
+                        year = item.year,
+                        overview = item.overview
+                    )
+                    val saved = app.savedRepository.toggleItem(entity)
+                    val msg = if (saved) "Saved to Watchlist" else "Removed from Watchlist"
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                }
             }
         )
         binding.heroViewPager.adapter = adapter
+        startAutoSlide(heroItems.size)
+    }
+
+    private fun startAutoSlide(itemCount: Int) {
+        autoSlideJob?.cancel()
+        if (itemCount <= 1) return
+        autoSlideJob = viewLifecycleOwner.lifecycleScope.launch {
+            while (isActive) {
+                delay(5000)
+                if (_binding != null) {
+                    val next = (binding.heroViewPager.currentItem + 1) % itemCount
+                    binding.heroViewPager.setCurrentItem(next, true)
+                }
+            }
+        }
     }
 
     private fun setupContentSections(state: HomeUiState.Success) {
         binding.sectionsContainer.removeAllViews()
 
+        val allItems = (state.trending + state.popularMovies + state.topMovies)
+
         val sections = listOf(
-            "Trending Now" to state.trending,
+            "Trending Movies" to state.trending,
+            "Trending Movies - Cinema" to state.popularMovies.reversed().take(10),
             "Popular Movies" to state.popularMovies,
-            "Popular TV Series" to state.popularTv,
-            "Trending Anime & Animation" to state.trendingAnime,
+            "Latest Movies" to state.popularMovies.take(10),
             "Top Rated Movies" to state.topMovies,
-            "Top Rated TV Series" to state.topTv
+            "Popular TV Series" to state.popularTv,
+            "Top Rated TV Series" to state.topTv,
+            "Trending Anime & Animation" to state.trendingAnime,
+            "Action & Adventure" to allItems.filter { it.displayTitle.contains("man", true) || it.displayTitle.contains("war", true) || it.displayTitle.contains("avatar", true) }.take(8),
+            "Recommended For You" to state.trending.reversed().take(10)
         )
 
         for ((title, items) in sections) {
@@ -211,6 +274,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        autoSlideJob?.cancel()
         _binding = null
     }
 }
